@@ -10,6 +10,8 @@ import arrow
 from dateutil import tz
 from datetime import datetime
 
+from flask_weasyprint import HTML, render_pdf
+
 @bp.route("/")
 @login_required
 def view_statements():
@@ -128,4 +130,20 @@ def delete_statement(statement_id):
 			flash ('This statement could not be found.', 'error')
 			return redirect(url_for('statements.view_statements'))
 	abort (403)
+
 	
+@bp.route('/builder/pdf')
+def statement_pdf(data):
+	return render_template('statements/pdf_statement.html', data = data)
+	
+@bp.route('/builder', methods=['GET', 'POST'])
+@login_required
+def statement_builder():
+	form = forms.StatementBuilderForm()
+	if form.validate_on_submit():
+		del form.submit # Don't show submit button on printed form
+		html = statement_pdf(data = form.data)
+		return render_pdf (HTML(string=html))
+		
+		
+	return render_template('statements/statement_builder.html', title='Personal statement builder', form=form)
