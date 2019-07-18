@@ -64,6 +64,7 @@ def delete_project(project_id):
 def delete_statement (statement_id):
 	try:
 		StatementUpload.query.filter_by(id=statement_id).delete()
+		db.session.commit()
 		return True
 	except:
 		return False
