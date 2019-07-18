@@ -61,6 +61,19 @@ def create_statement_project():
 	abort(403)
 	
 	
+@bp.route('/project/edit/<project_id>', methods=['GET', 'POST'])
+def edit_statement_project(project_id):
+	if current_user.is_authenticated and app.models.is_admin(current_user.username):
+		statement_project = StatementProject.query.get(project_id)
+		form = app.statements.forms.StatementProjectForm(obj=statement_project)
+		if form.validate_on_submit():
+			statement_project.title = form.title.data
+			db.session.commit()
+			flash('Statement project edited successfully.', 'success')
+			return redirect(url_for('statements.view_statements'))
+		return render_template('statements/create_statement_project.html', title='Edit Personal Statement Project', form=form)
+	
+	
 @bp.route("/project/view/<project_id>")
 @login_required
 def view_statement_project(project_id):
