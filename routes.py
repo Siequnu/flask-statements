@@ -16,7 +16,9 @@ from flask_weasyprint import HTML, render_pdf
 @login_required
 def view_statements():
 	if current_user.is_authenticated and app.models.is_admin(current_user.username):
-		statement_projects_object = db.session.query(StatementProject, User).join(User, StatementProject.user_id==User.id).all()
+		statement_projects_object = db.session.query(StatementProject, User).join(
+			User, StatementProject.user_id==User.id).order_by(
+			StatementProject.timestamp.desc()).all()
 		statement_projects = []
 		for project, user in statement_projects_object:
 			project_dict = project.__dict__
