@@ -51,6 +51,14 @@ def download_statement (statement_id):
 	return send_from_directory(filename=filename, directory=current_app.config['UPLOAD_FOLDER'],
 								   as_attachment = True, attachment_filename = original_filename)
 	
+def delete_project(project_id):
+	# Delete statements
+	statements = db.session.query(StatementUpload).filter_by(project_id=project_id).all()
+	for statement in statements:
+		delete_statement(statement.id)
+	# Delete project
+	StatementProject.query.filter_by(id=project_id).delete()
+
 
 def delete_statement (statement_id):
 	try:

@@ -61,7 +61,7 @@ def create_statement_project():
 	abort(403)
 	
 	
-@bp.route("/view/<project_id>")
+@bp.route("/project/view/<project_id>")
 @login_required
 def view_statement_project(project_id):
 	# Only admin or owner of the project can access this
@@ -84,6 +84,15 @@ def view_statement_project(project_id):
 	abort(403)
 	
 	
+@bp.route('/project/delete/<project_id>')
+@login_required
+def delete_project(project_id):
+	if current_user.is_authenticated and app.models.is_admin(current_user.username):
+		app.statements.models.delete_project(project_id)
+		flash ('Statement deleted successfully', 'success')
+		return redirect(url_for('statements.view_statements'))
+	abort (403)
+
 @bp.route('/upload/<project_id>', methods=['GET', 'POST'])
 @login_required
 def upload_statement(project_id):
