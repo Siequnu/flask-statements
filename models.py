@@ -58,6 +58,7 @@ def delete_project(project_id):
 		delete_statement(statement.id)
 	# Delete project
 	StatementProject.query.filter_by(id=project_id).delete()
+	db.session.commit()
 
 
 def delete_statement (statement_id):
