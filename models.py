@@ -34,7 +34,7 @@ def new_statement_from_form (form, project_id):
 					timestamp = datetime.now())
 
 	db.session.add(new_statement)
-	db.session.flush()
+	db.session.commit()
 	
 	# Generate thumbnail
 	executor.submit(app.files.models.get_thumbnail, new_statement.filename)
