@@ -3,7 +3,7 @@ from flask_login import current_user
 
 import app.models
 from app import db
-from app.models import StatementProject, StatementUpload, StatementDownload
+from app.models import StatementProject, StatementUpload, StatementDownload, User
 from app.files import models
 
 from datetime import datetime, date
@@ -19,7 +19,28 @@ def new_project_from_form (form):
 	new_project = StatementProject(user_id=current_user.id, title=form.title.data, timestamp = datetime.now())
 	db.session.add(new_project)
 	db.session.commit()
-		
+
+def get_projects_needing_review():
+	statement_project_data = db.session.query(StatementProject, User).join(User, StatementProject.user_id==User.id).all()
+	# Get latest statement for each project
+	projects_needing_review = []
+	for project, user in statement_project_data:
+		latest_statement = db.session.query(StatementUpload, User).join(
+			User, StatementUpload.user_id==User.id).filter(
+			StatementUpload.project_id==project.id).order_by(
+			StatementUpload.timestamp.desc()).first()
+		if latest_statement is not None:
+			if latest_statement[1].is_admin is not True:
+				project_dict = project.__dict__
+				project_dict['total_uploads'] = len(db.session.query(StatementUpload).filter_by(project_id=project.id).all())
+				project_dict['humanized_timestamp'] = arrow.get(project_dict['timestamp'], tz.gettz('Asia/Hong_Kong')).humanize()
+				project_dict['project_owner_username'] = user.username
+				project_dict['latest_upload_humanised_timestamp'] = arrow.get(latest_statement[0].timestamp, tz.gettz('Asia/Hong_Kong')).humanize()
+				projects_needing_review.append(project_dict)
+				
+	
+	return projects_needing_review
+			
 		
 def new_statement_from_form (form, project_id):
 	file = form.statement_upload_file.data
