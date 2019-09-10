@@ -41,6 +41,12 @@ def get_projects_needing_review():
 	
 	return projects_needing_review
 			
+def delete_all_projects_and_statements_from_user_id (user_id):
+	projects = StatementProject.query.filter_by(user_id=user_id).all()
+	if projects is not None:
+		for project in projects:
+			delete_project(project.id) # This also deleted all statements for this project
+
 		
 def new_statement_from_form (form, project_id):
 	file = form.statement_upload_file.data
