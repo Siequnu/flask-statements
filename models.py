@@ -68,7 +68,9 @@ def new_statement_from_form (form, project_id):
 	
 	
 def download_statement (statement_id):
-	download = StatementDownload(statement_id = statement_id, user_id = current_user.id)
+	download = StatementDownload(statement_id = statement_id,
+								 user_id = current_user.id,
+								 timestamp = datetime.now())
 	db.session.add(download)
 	db.session.commit()
 	
