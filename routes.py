@@ -18,7 +18,8 @@ def view_statements():
 	if current_user.is_authenticated and app.models.is_admin(current_user.username):
 		statement_projects_object = db.session.query(StatementProject, User).join(
 			User, StatementProject.user_id==User.id).order_by(
-			StatementProject.timestamp.desc()).all()
+			StatementProject.timestamp.desc()).filter(
+			StatementProject.archived.isnot(True)).all()
 		statement_projects = []
 		for project, user in statement_projects_object:
 			project_dict = project.__dict__
@@ -75,6 +76,38 @@ def edit_statement_project(project_id):
 			return redirect(url_for('statements.view_statements'))
 		return render_template('statements/create_statement_project.html', title='Edit Personal Statement Project', form=form)
 	
+@bp.route('/archive/<project_id>')
+def archive_statement_project(project_id):
+	if current_user.is_authenticated and app.models.is_admin(current_user.username):
+		try:
+			statement_project = StatementProject.query.get(project_id)
+			user = User.query.get(statement_project.user_id)
+			statement_project.archived = True
+			db.session.commit()
+			
+			flash('Statement project archived successfully.', 'success')
+			
+		except:
+			flash('An error occured while archiving the statement project.', 'error')
+		return redirect(url_for('statements.view_statements'))
+	
+
+@bp.route('/unarchive/<project_id>')
+def unarchive_statement_project(project_id):
+	if current_user.is_authenticated and app.models.is_admin(current_user.username):
+		try:
+			statement_project = StatementProject.query.get(project_id)
+			user = User.query.get(statement_project.user_id)
+			statement_project.archived = False
+			db.session.commit()
+			
+			flash('Statement project unarchived successfully.', 'success')
+			
+		except:
+			flash('An error occured while unarchiving the statement project.', 'error')
+		return redirect(url_for('statements.view_statements'))
+	
+	
 	
 @bp.route("/project/view/<project_id>")
 @login_required
@@ -98,6 +131,33 @@ def view_statement_project(project_id):
 							   admin = app.models.is_admin(current_user.username))
 	abort(403)
 	
+	
+	
+@bp.route("/archive")
+@login_required
+def view_archived_statement_projects():
+	if current_user.is_authenticated and app.models.is_admin(current_user.username):
+		statement_projects_object = db.session.query(StatementProject, User).join(
+			User, StatementProject.user_id==User.id).order_by(
+			StatementProject.timestamp.desc()).filter(StatementProject.archived==True).all()
+		statement_projects = []
+		for project, user in statement_projects_object:
+			project_dict = project.__dict__
+			project_dict['total_uploads'] = len(db.session.query(StatementUpload).filter_by(project_id=project.id).all())
+			project_dict['latest_project_upload'] = db.session.query(StatementUpload).filter_by(
+				project_id = project.id).order_by(StatementUpload.timestamp.desc()).first()
+			if project_dict['latest_project_upload'] is not None:
+				project_dict['latest_upload_humanized_timestamp'] = arrow.get(project_dict['latest_project_upload'].timestamp, tz.gettz('Asia/Hong_Kong')).humanize()
+				project_dict['latest_upload_by_teacher'] = app.models.is_admin(User.query.get(project_dict['latest_project_upload'].user_id).username)
+			statement_projects.append([project_dict, user])
+		student_count = app.user.models.get_total_user_count()
+		classes = app.assignments.models.get_all_class_info()
+		return render_template('statements/view_archived_statement_projects.html',
+							   title='Archived Statement Projects',
+							   statement_projects = statement_projects,
+							   student_count = student_count,
+							   classes = classes)
+	abort(403)
 	
 @bp.route('/project/delete/<project_id>')
 @login_required
