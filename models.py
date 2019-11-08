@@ -12,6 +12,29 @@ import arrow, json, time
 
 from app import executor
 
+def get_statement_projects (archived = False):
+	if archived:
+		statement_projects_object = db.session.query(StatementProject, User).join(
+			User, StatementProject.user_id==User.id).order_by(
+			StatementProject.timestamp.desc()).filter(
+			StatementProject.archived==True).all()
+	else:
+		statement_projects_object = db.session.query(StatementProject, User).join(
+			User, StatementProject.user_id==User.id).order_by(
+			StatementProject.timestamp.desc()).filter(
+			StatementProject.archived.isnot(True)).all()
+	statement_projects = []
+	for project, user in statement_projects_object:
+		project_dict = project.__dict__
+		project_dict['total_uploads'] = len(db.session.query(StatementUpload).filter_by(project_id=project.id).all())
+		project_dict['latest_project_upload'] = db.session.query(StatementUpload).filter_by(
+			project_id = project.id).order_by(StatementUpload.timestamp.desc()).first()
+		if project_dict['latest_project_upload'] is not None:
+			project_dict['latest_upload_humanized_timestamp'] = arrow.get(project_dict['latest_project_upload'].timestamp, tz.gettz('Asia/Hong_Kong')).humanize()
+			project_dict['latest_upload_by_teacher'] = app.models.is_admin(User.query.get(project_dict['latest_project_upload'].user_id).username)
+		statement_projects.append([project_dict, user])
+	return statement_projects
+
 def current_user_is_project_owner (project_id):
 	return current_user.id == StatementProject.query.get(project_id).user_id
 
