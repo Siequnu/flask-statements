@@ -1,0 +1,97 @@
+ {% extends "header.html" %} {% block app_content %}
+ <link rel="stylesheet" href="/static/css/form-control-borderless.css">
+<div class="container">
+    <br>
+
+    <div class="container">
+        <div class="row">
+            <br/>
+
+            <div class="col-md-12">
+                <h1>Archived personal statement projects</h1>
+            </div>
+        </div>
+    </div>
+    <hr>
+<a href="{{url_for('statements.view_statements')}}" <button class="btn btn-secondary"><i class="fa fa-chevron-left"></i> Back to current projects</button></a>
+  <br/>
+  <br>
+  
+  <div class="row justify-content-left">
+                        <div class="col-12 col-md-10 col-lg-8">
+                            <form class="card">
+                                <div class="card-body row no-gutters align-items-center">
+                                    <div class="col-auto">
+                                        <i class="fas fa-search h4 text-body"></i>
+                                    </div>
+                                    <!--end of col-->
+                                    <div class="col">
+                                        <input id="myInput" class="form-control form-control-lg form-control-borderless" type="search" placeholder="Search users or statements">
+                                    </div>
+                                    <!--end of col-->
+                                </div>
+                            </form>
+                        </div>
+                        <!--end of col-->
+                    </div>
+  
+
+   <div class="container">
+      <br>
+      <div class="row">
+        <div class="col-xs-12">
+          <div class="table-responsive">
+            <table summary="Student uploads for this task" class="table table-bordered table-hover">
+        	  <thead>
+              <tr>
+              <th>User</th>
+              <th>Project</th>
+              <th>Uploads</th>
+              <th>Latest upload</th>
+              <th>Reviewed</th>
+        		  <th>Actions</th>
+            </tr>
+          </thead>
+		  <tbody id="searchableTable">
+			{% for project, user in statement_projects %}
+            {% if project.latest_upload_by_teacher is defined %}
+            {% if project.latest_upload_by_teacher == True %}
+            <tr data-status="reviewed">
+             {% else %}
+             <tr data-status="pending-review">
+             {% endif %}
+             {% else %}
+             <tr data-status="empty">
+              {% endif %}
+               <td>{{user.username}}</td>
+              <td>{{project.title}}</td>
+              <td>{{project.total_uploads}}</td>
+              <td>{{project.latest_upload_humanized_timestamp}}</td>
+              {% if project.latest_upload_by_teacher == True %}
+              <td>Reviewed</td>
+              {% elif project.latest_upload_by_teacher == False %}
+              <td>Needs review</td>
+              {% else %}
+              <td></td>
+              {% endif %}
+              
+            <td>
+             <a href="{{url_for('statements.unarchive_statement_project', project_id = project.id)}}" <button class="btn btn-sm btn-primary"><i class="fa fa-box-open"></i> Un-archive </button></a>
+             <a href="{{url_for('statements.view_statement_project', project_id = project.id)}}" <button class="btn btn-sm btn-outline-primary"><i class="fa fa-folder-open"></i> View project </button></a>
+             <a href="{{url_for('statements.edit_statement_project', project_id = project.id)}}" <button class="btn btn-sm btn-outline-warning"><i class="fa fa-edit"></i> Edit</button></a>
+             <a href="{{url_for('statements.delete_project', project_id = project.id)}}" <button class="btn btn-sm btn-outline-danger"><i class="fa fa-trash-alt"></i> Delete</button></a>
+            </td>
+            </tr>
+           {% endfor %}
+          </tbody>
+          <tfoot>
+            <tr>
+            </tr>
+          </tfoot>
+        </table>
+      </div><!--end of .table-responsive-->
+
+</div>
+
+<script src="/static/js/sortable-table.js"></script>
+{% endblock %}

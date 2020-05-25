@@ -1,0 +1,27 @@
+{{ bootstrap.load_css() }}
+
+<!-- Custom fonts for this template -->
+<link href="https://fonts.googleapis.com/css?family=Montserrat:400,700" rel="stylesheet" type="text/css">
+<link href="https://fonts.googleapis.com/css?family=Lato:400,700,400italic,700italic" rel="stylesheet" type="text/css">
+<link href="/static/bootstrap/css/freelancer.min.css" rel="stylesheet">
+
+
+        <div class="row h-100 justify-content-center align-items-center">
+                <img src="/static/w_logo_small.png" width="20px" height="20px" class="" alt="">
+        </div>
+            <div class="row h-100 justify-content-center align-items-center">
+                 <h2>Elm Online Personal Statement Builder</h2>
+        </div>
+    <div class="col-md-8">
+    <div class="card bg-light mb-3">
+    <div class="card-body">
+    <h5 class="card-title">{{current_user.username}}'s draft personal statement</h5>
+    <br>
+    
+    {% for question, answer in data.items() %}    
+    <p class="card-text">{{answer}}</p>
+    {% endfor %}
+  </div>
+    </div>
+    </div>
+
