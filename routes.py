@@ -193,7 +193,7 @@ def delete_statement(statement_id):
 	
 @bp.route('/builder/pdf')
 def statement_pdf(data):
-	return render_template('statements/pdf_statement.html', data = data)
+	return render_template('statements/pdf_statement.html', data = data, app_name = current_app.config['APP_NAME'])
 	
 @bp.route('/builder', methods=['GET', 'POST'])
 @login_required
