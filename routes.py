@@ -35,7 +35,7 @@ def view_statements():
 			statement_projects_array.append(project_dict)
 			
 		return render_template('statements/statements.html', title='Personal Statements', statement_projects = statement_projects_array)
-	abort(403)
+	abort (403)
 	
 
 @bp.route("/project/create", methods=['GET', 'POST'])
@@ -48,7 +48,7 @@ def create_statement_project():
 			flash('Project successfully created!', 'success')
 			return redirect(url_for('statements.view_statements'))
 		return render_template('statements/create_statement_project.html', title='Create Personal Statement Project', form=form)
-	abort(403)
+	abort (403)
 	
 	
 @bp.route('/project/edit/<project_id>', methods=['GET', 'POST'])
@@ -62,6 +62,7 @@ def edit_statement_project(project_id):
 			flash('Statement project edited successfully.', 'success')
 			return redirect(url_for('statements.view_statements'))
 		return render_template('statements/create_statement_project.html', title='Edit Personal Statement Project', form=form)
+	abort (403)
 	
 @bp.route('/archive/<project_id>')
 def archive_statement_project(project_id):
@@ -77,6 +78,7 @@ def archive_statement_project(project_id):
 		except:
 			flash('An error occured while archiving the statement project.', 'error')
 		return redirect(url_for('statements.view_statements'))
+	abort (403)
 	
 
 @bp.route('/unarchive/<project_id>')
@@ -93,6 +95,7 @@ def unarchive_statement_project(project_id):
 		except:
 			flash('An error occured while unarchiving the statement project.', 'error')
 		return redirect(url_for('statements.view_statements'))
+	abort (403)
 	
 	
 	
@@ -116,7 +119,7 @@ def view_statement_project(project_id):
 							   project_id = project_id,
 							   project_owner_user_id = project_owner_user_id,
 							   admin = app.models.is_admin(current_user.username))
-	abort(403)
+	abort (403)
 	
 	
 	
@@ -132,7 +135,7 @@ def view_archived_statement_projects():
 							   statement_projects = statement_projects,
 							   student_count = student_count,
 							   classes = classes)
-	abort(403)
+	abort (403)
 	
 @bp.route('/project/delete/<project_id>')
 @login_required
@@ -203,6 +206,4 @@ def statement_builder():
 		del form.submit # Don't show submit button on printed form
 		html = statement_pdf(data = form.data)
 		return render_pdf (HTML(string=html))
-		
-		
 	return render_template('statements/statement_builder.html', title='Personal statement builder', form=form)
