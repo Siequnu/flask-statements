@@ -20,12 +20,22 @@ def view_statements():
 		statement_projects = app.statements.models.get_statement_projects()
 		student_count = app.user.models.get_total_user_count()
 		classes = app.assignments.models.get_all_class_info()
-		return render_template('statements/statements.html',
-                         title='Personal Statements',
-                         admin=True,
-                         statement_projects=statement_projects,
-                         student_count=student_count,
-                         classes=classes)
+
+		# Form used for the modal
+		form = forms.StatementProjectForm()
+
+		# Users to populate modal
+		users = app.classes.models.get_teacher_classes_with_students_from_teacher_id (current_user.id)
+		print (users)
+		return render_template(
+			'statements/statements.html',
+        	title='Personal Statements',
+        	admin=True,
+        	statement_projects=statement_projects,
+        	student_count=student_count,
+        	classes=classes,
+			form = form,
+			users=users)
 	elif current_user.is_authenticated:
 		statement_projects_object = db.session.query(
 			StatementProject).filter_by(user_id=current_user.id).all()
@@ -43,12 +53,19 @@ def view_statements():
 
 
 @bp.route("/project/create", methods=['GET', 'POST'])
+@bp.route("/project/create/<student_id>", methods=['GET', 'POST'])
 @login_required
-def create_statement_project():
+def create_statement_project(student_id = False):
 	if current_user.is_authenticated:
 		form = forms.StatementProjectForm()
+
+		# Only admin can create student statements for them
+		if student_id:
+			if current_user.is_admin == False:
+				abort (403)
+
 		if form.validate_on_submit():
-			app.statements.models.new_project_from_form(form)
+			app.statements.models.new_project_from_form(form, student_id)
 			flash('Project successfully created!', 'success')
 			return redirect(url_for('statements.view_statements'))
 		return render_template('statements/create_statement_project.html', title='Create Personal Statement Project', form=form)

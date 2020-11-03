@@ -38,8 +38,12 @@ def get_statement_projects (archived = False):
 def current_user_is_project_owner (project_id):
 	return current_user.id == StatementProject.query.get(project_id).user_id
 
-def new_project_from_form (form):
-	new_project = StatementProject(user_id=current_user.id, title=form.title.data, timestamp = datetime.now())
+# Optionally accepts a student_id. If none is given, defaults to current user
+def new_project_from_form (form, student_id):
+	if student_id is False:
+		student_id = current_user.id
+	
+	new_project = StatementProject(user_id=student_id, title=form.title.data, timestamp = datetime.now())
 	db.session.add(new_project)
 	db.session.commit()
 
