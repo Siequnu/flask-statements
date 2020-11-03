@@ -26,7 +26,7 @@ def view_statements():
 
 		# Users to populate modal
 		users = app.classes.models.get_teacher_classes_with_students_from_teacher_id (current_user.id)
-		print (users)
+		
 		return render_template(
 			'statements/statements.html',
         	title='Personal Statements',
