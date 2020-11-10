@@ -2,6 +2,7 @@
  {% from 'bootstrap/form.html' import render_field %}
  {% block app_content %}
  <link rel="stylesheet" href="/static/css/form-control-borderless.css">
+ <link rel="stylesheet" href="/static/css/no-more-tables.css">
  <div class="container">
      <div class="container">
          <div class="row">
@@ -69,9 +70,10 @@
                                          <td>{{student.username}}</td>
                                          <td>{{student.student_number}}</td>
                                          <td>
-                                             <button class="btn btn-outline-success addStatementProject" data-studentusername="{{student.username}}" data-studentid="{{student.id}}"><i
-                                                     class="fa fa-plus-circle"></i>
-                                                 New reference project</button>
+                                             <button class="btn btn-sm btn-outline-success addStatementProject"
+                                                 data-studentusername="{{student.username}}"
+                                                 data-studentid="{{student.id}}"><i class="fa fa-plus-circle"></i>
+                                                 Create project</button>
                                          </td>
                                      </tr>
                                      {% endfor %}
@@ -95,8 +97,8 @@
                          <h3 class="display-6 username"></h3>
                          <hr class="my-4">
 
-                         <form class="newStatementForm" method="post" action="{{url_for('statements.create_statement_project')}}"
-                             enctype="multipart/form-data">
+                         <form class="newStatementForm" method="post"
+                             action="{{url_for('statements.create_statement_project')}}" enctype="multipart/form-data">
                              <input type="hidden" name="_csrf_token" value="{{ csrf_token() }}">
                              {{ render_field(form.title) }}
                      </div>
@@ -135,16 +137,14 @@
      </div>
      <br />
 
-     <a href="#"><button class="btn btn-lg btn-outline-success" data-toggle="modal"
+     <a href="#"><button class="btn btn-outline-success mb-1 mt-1" data-toggle="modal"
              data-target="#createNewStatementProjectModal"><i class="fa fa-plus-circle"></i> New statement
              project</button></a>
      <a href="{{url_for('statements.view_archived_statement_projects')}}"><button
-             class="btn btn-lg btn-outline-secondary"><i class="fa fa-archive"></i> View statement project
+             class="btn btn-outline-secondary mb-1 mt-1"><i class="fa fa-archive"></i> View statement project
              archive</button>
      </a>
-     <br>
-     <br>
-     <div class="row justify-content-left mb-3">
+     <div class="row justify-content-left mb-2 mt-2">
          <div class="col-12 col-md-10 col-lg-8">
              <form class="card">
                  <div class="card-body row no-gutters align-items-center">
@@ -164,158 +164,149 @@
      </div>
 
 
-     <div class="btn-group">
-         <button type="button" class="btn btn-lg btn-success btn-filter" data-target="reviewed">Reviewed</button>
-         <button type="button" class="btn btn-lg btn-warning btn-filter" data-target="pending-review">Pending
+     <div class="btn-group mt-3 mb-3">
+         <button type="button" class="btn btn-sm btn-success btn-filter" data-target="reviewed">Reviewed</button>
+         <button type="button" class="btn btn-sm btn-warning btn-filter" data-target="pending-review">Pending
              review</button>
-         <button type="button" class="btn btn-lg btn-light btn-filter" data-target="empty">Just started</button>
-         <button type="button" class="btn btn-lg btn-secondary btn-filter" data-target="all">All</button>
+         <button type="button" class="btn btn-sm btn-light btn-filter" data-target="empty">Just started</button>
+         <button type="button" class="btn btn-sm btn-secondary btn-filter" data-target="all">All</button>
      </div>
 
-     <div class="container">
-         <br>
-         <div class="row">
-             <div class="col-xs-12">
-                 <div class="table-responsive">
-                     <table summary="Student uploads for this task" class="table table-bordered table-hover">
-                         <thead>
-                             <tr>
-                                 <th>User</th>
-                                 <th>Project</th>
-                                 <th>Uploads</th>
-                                 <th>Latest upload</th>
-                                 <th>Reviewed</th>
-                                 <th>Actions</th>
-                             </tr>
-                         </thead>
-                         <tbody id="searchableTable">
-                             {% for project, user in statement_projects %}
-                             {% if project.latest_upload_by_teacher is defined %}
-                             {% if project.latest_upload_by_teacher == True %}
-                             <tr data-status="reviewed">
-                                 {% else %}
-                             <tr data-status="pending-review">
-                                 {% endif %}
-                                 {% else %}
-                             <tr data-status="empty">
-                                 {% endif %}
-                                 <td>{{user.username}}</td>
-                                 <td>{{project.title}}</td>
-                                 <td>{{project.total_uploads}}</td>
-                                 <td>{{project.latest_upload_humanized_timestamp}}</td>
-                                 {% if project.latest_upload_by_teacher == True %}
-                                 <td>Reviewed</td>
-                                 {% elif project.latest_upload_by_teacher == False %}
-                                 <td>Needs review</td>
-                                 {% else %}
-                                 <td></td>
-                                 {% endif %}
 
-                                 <td>
-                                     <a
-                                         href="{{url_for('statements.view_statement_project', project_id = project.id)}}">
-                                         <button class="btn btn-sm btn-outline-primary"><i
-                                                 class="fa fa-folder-open"></i> View project </button></a>
-                                     <a
-                                         href="{{url_for('statements.edit_statement_project', project_id = project.id)}}">
-                                         <button class="btn btn-sm btn-outline-warning"><i class="fa fa-edit"></i>
-                                             Edit</button></a>
-                                     <a
-                                         href="{{url_for('statements.archive_statement_project', project_id = project.id)}}">
-                                         <button class="btn btn-sm btn-outline-secondary"><i class="fa fa-archive"></i>
-                                             Archive </button></a>
-                                     <a href="{{url_for('statements.delete_project', project_id = project.id)}}"><button
-                                             class="btn btn-sm btn-outline-danger"><i class="fa fa-trash-alt"></i>
-                                             Delete</button></a>
-                                 </td>
-                             </tr>
-                             {% endfor %}
-                         </tbody>
-                         <tfoot>
-                             <tr>
-                             </tr>
-                         </tfoot>
-                     </table>
-                 </div>
-                 <!--end of .table-responsive-->
+     <div class="table-responsive no-more-tables">
+         <table summary="Student statements for this task" class="table table-responsive table-striped table-bordered table-hover table-sm">
+             <thead>
+                 <tr>
+                     <th>User</th>
+                     <th>Project</th>
+                     <th>Uploads</th>
+                     <th>Latest upload</th>
+                     <th>Reviewed</th>
+                     <th>Actions</th>
+                 </tr>
+             </thead>
+             <tbody id="searchableTable">
+                 {% for project, user in statement_projects %}
+                 {% if project.latest_upload_by_teacher is defined %}
+                 {% if project.latest_upload_by_teacher == True %}
+                 <tr data-status="reviewed">
+                     {% else %}
+                 <tr data-status="pending-review">
+                     {% endif %}
+                     {% else %}
+                 <tr data-status="empty">
+                     {% endif %}
+                     <td><strong>{{user.username}}</strong></td>
+                     <td>{{project.title}}</td>
+                     <td>{{project.total_uploads}}</td>
+                     <td>{{project.latest_upload_humanized_timestamp}}</td>
+                     {% if project.latest_upload_by_teacher == True %}
+                     <td>Reviewed</td>
+                     {% elif project.latest_upload_by_teacher == False %}
+                     <td>Needs review</td>
+                     {% else %}
+                     <td></td>
+                     {% endif %}
 
-             </div>
+                     <td>
+                         <a href="{{url_for('statements.view_statement_project', project_id = project.id)}}">
+                             <button class="btn btn-sm btn-outline-primary"><i class="fa fa-folder-open"></i> View
+                                 project </button></a>
+                         <a href="{{url_for('statements.edit_statement_project', project_id = project.id)}}">
+                             <button class="btn btn-sm btn-outline-warning"><i class="fa fa-edit"></i>
+                                 Edit</button></a>
+                         <a href="{{url_for('statements.archive_statement_project', project_id = project.id)}}">
+                             <button class="btn btn-sm btn-outline-secondary"><i class="fa fa-archive"></i>
+                                 Archive </button></a>
+                         <a href="{{url_for('statements.delete_project', project_id = project.id)}}"><button
+                                 class="btn btn-sm btn-outline-danger"><i class="fa fa-trash-alt"></i>
+                                 Delete</button></a>
+                     </td>
+                 </tr>
+                 {% endfor %}
+             </tbody>
+             <tfoot>
+                 <tr>
+                 </tr>
+             </tfoot>
+         </table>
+     </div>
+     <!--end of .table-responsive-->
 
-             {% else %}
+ </div>
 
-             <div class="container">
-                 <a href="{{url_for('statements.create_statement_project')}}"><button class="btn btn-lg btn-primary"><i
-                             class="fa fa-plus-circle"></i> Create new personal statement project</button></a>
-                 <br>
-                 <br>
+ {% else %}
 
-                 <div class="card bg-light mb-3 text-center">
-                     <div class="card-body">
-                         <h5 class="card-title">Are you stuck for ideas?</h5>
-                         <p class="card-text">Use our personal statement builder to help you organise your personal
-                             statement and make a first draft!</p>
-                         <a href="{{url_for('statements.statement_builder')}}"><button class="btn btn-warning"><i
-                                     class="fa fa-magic"></i> Go to the statement builder</button></a>
-                     </div>
-                 </div>
-                 {% if statement_projects|length > 0 %}
-                 <div class="card">
-                     <div class="card-header">
-                         <h4><i class="fa fa-file-alt"></i> Personal Statement Projects</h4>
-                     </div>
-                     <div class="card-body">
+ <div class="container">
+     <a href="{{url_for('statements.create_statement_project')}}"><button class="btn btn-lg btn-primary"><i
+                 class="fa fa-plus-circle"></i> Create new personal statement project</button></a>
+     <br>
+     <br>
 
-                         {% for project in statement_projects %}
-                         <div class="container">
-                             <div class="row align-items-center">
-                                 <div class="col-2 text-center">
-                                     <h1 class="display-4"><span
-                                             class="badge badge-secondary">{{project.total_uploads}}</span></h1>
-                                     <h4>uploads</h4>
-                                 </div>
-                                 <div class="col-6">
-                                     <h3 class="text"><strong>{{project.title}}</strong></h3>
-                                     <ul class="list-inline">
-                                         <li class="list-inline-item"><i class="fa fa-calendar" aria-hidden="true"></i>
-                                             created on {{project.timestamp.strftime('%A')}},
-                                             {{project.humanized_timestamp}}</li>
-                                     </ul>
-
-                                 </div>
-                                 <div class="col-4 text-right align-center">
-                                     <a
-                                         href="{{url_for('statements.view_statement_project', project_id = project.id)}}">
-                                         <button class="btn btn-lg btn-secondary"><i class="fa fa-book-open"></i> View
-                                             project </button></a>
-                                 </div>
-                             </div>
-                         </div>
-                         {% if loop.index < loop.length %}
-                         <hr>
-                         {% endif %}
-
-                         {% endfor %}
-
-                     </div>
-                 </div>
-                 {% endif %}
-
-             </div>
-
-             {% endif %}
-             <script src="/static/js/sortable-table.js"></script>
+     <div class="card bg-light mb-3 text-center">
+         <div class="card-body">
+             <h5 class="card-title">Are you stuck for ideas?</h5>
+             <p class="card-text">Use our personal statement builder to help you organise your personal
+                 statement and make a first draft!</p>
+             <a href="{{url_for('statements.statement_builder')}}"><button class="btn btn-warning"><i
+                         class="fa fa-magic"></i> Go to the statement builder</button></a>
          </div>
      </div>
+     {% if statement_projects|length > 0 %}
+     <div class="card">
+         <div class="card-header">
+             <h4><i class="fa fa-file-alt"></i> Personal Statement Projects</h4>
+         </div>
+         <div class="card-body">
+
+             {% for project in statement_projects %}
+             <div class="container">
+                 <div class="row align-items-center">
+                     <div class="col-2 text-center">
+                         <h1 class="display-4"><span class="badge badge-secondary">{{project.total_uploads}}</span></h1>
+                         <h4>uploads</h4>
+                     </div>
+                     <div class="col-6">
+                         <h3 class="text"><strong>{{project.title}}</strong></h3>
+                         <ul class="list-inline">
+                             <li class="list-inline-item"><i class="fa fa-calendar" aria-hidden="true"></i>
+                                 created on {{project.timestamp.strftime('%A')}},
+                                 {{project.humanized_timestamp}}</li>
+                         </ul>
+
+                     </div>
+                     <div class="col-4 text-right align-center">
+                         <a href="{{url_for('statements.view_statement_project', project_id = project.id)}}">
+                             <button class="btn btn-lg btn-secondary"><i class="fa fa-book-open"></i> View
+                                 project </button></a>
+                     </div>
+                 </div>
+             </div>
+             {% if loop.index < loop.length %}
+             <hr>
+             {% endif %}
+
+             {% endfor %}
+
+         </div>
+     </div>
+     {% endif %}
+
  </div>
+
+ {% endif %}
+ <script src="/static/js/sortable-table.js"></script>
+
 
  <script>
      $(function () {
-        $('.addStatementProject').on ('click', function () {
-            $('.studentSelectionPane').hide();
-            $('.creationPane .username').text($(this).data('studentusername'));
-            $('.newStatementForm').attr('action', '/statements/project/create/'+ $(this).data('studentid'));
-            $('.creationPane').show();
-        });
+         $('.addStatementProject').on('click', function () {
+             $('.studentSelectionPane').hide();
+             $('.creationPane .username').text($(this).data('studentusername'));
+             $('.newStatementForm').attr('action', '/statements/project/create/' + $(this).data(
+                 'studentid'));
+             $('.creationPane').show();
+         });
      });
  </script>
 
